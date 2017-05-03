@@ -18,28 +18,22 @@ diseasefactor = 1.0
 Ran = "False"
 
 def menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran):
-	print ("""-------------------------
+	print ("""
 1.	View Values
 2.	Quit
 3.	Run Model
 4.	Export Data
-5.	Set Generation Values
--------------------------""")
+5.	Set Generation Values""")
 	#main menu. After selecting a option (except 2) you will return here
 	Userinput = input ("Select A Option 1-5 : ")
 	
 	if Userinput == ("1"):
-		print ("""-------------------------
-Population Ammount: 
-	Seniors""",valuePASenior,"""
-	Adult""",valuePAAdult,"""
-	Juviniles""",valuePAJuv,"""
-	Total""",valuePA,"""
-Survival Ammount:""",valueSA,"""
-Birth Rate:""",valueBR,"""
-Generations 5-25:""",valueAG,"""
-Disease Trigger Point:""",valueDT,"""
--------------------------""")
+		print ("""
+Population Ammount: Seniors""",valuePASenior,"""Adult""",valuePAAdult,"""Juviniles""",valuePAJuv,"""All""",valuePA,
+		"""\nSurvival Ammount:""",valueSA,
+		"""\nBirth Rate:""",valueBR,
+		"""\nGenerations 5-25:""",valueAG,
+		"""\nDisease Trigger Point:""",valueDT)
 		#Displays all values of the saved varables
 		menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran)
 		
@@ -47,15 +41,7 @@ Disease Trigger Point:""",valueDT,"""
 		print ("Quitting")
 		
 	elif Userinput == ("3"):
-		gen = -1
 		while gen < valueAG:
-			print ("""-------[Generation:""",gen+1,"""/""",valueAG,"""]-------
-Population: 
-    Seniors""",(round(valuePASenior)),"""
-    Adult:""",(round(valuePAAdult)),"""
-    Juviniles:""",(round(valuePAJuv)),"""
-    Total:""",(round(valuePA)),"""/""",valueDT,"""
-Disease Effect:""",diseasefactor)
 			#loops until gen is the same value as the ammount of generations
 			valuePASenior = valuePAAdult * valueSA 
 			# sets seniors value to the ammount of adults * by the Survival ammount that will be lower than 1
@@ -74,11 +60,13 @@ Disease Effect:""",diseasefactor)
 				diseasefactor = diseasefactor/100
 				#divides the diseasefactor by 100
 			gen = gen + 1
+
 			#adds 1 to the total generations
+
 			try:
 				#using another csv should be more effecent than lists as it wont use ram to hold them
 				Ran = "True"
-				if gen == 0:
+				if gen == 1:
 					#writes the headder of the file and clears the temp file
 					TemporyFile=open("Tempfile.csv","w+") 
 					TemporyFile.write("Generation,Seniors,Adults,Juvinils,Total Population,Survival Amount,Birth Rate,Disease Trigger,Disease Factor")
@@ -116,8 +104,7 @@ Disease Effect:""",diseasefactor)
 				gen = valueAG
 				menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran)
 		else:
-			print ("Finished and New Population Edited")
-			gen = 0
+			print ("Finished")
 			menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran)
 			
 	elif Userinput == ("4"):
@@ -125,20 +112,20 @@ Disease Effect:""",diseasefactor)
 			if Ran == "True":
 				userinput = input ("File Name:")
 				userinput = str.join('.', (userinput, 'csv'))
-				FileExitsCheck=open(userinput,"r") #basic way to fix file saving
-				Confirm = input ("This file exists!\nTo continue type '1' or '2' to quit\n")
-				if Confirm == "1":
+				if os.path.isfile(userinput) == "true":
+					Confirm = input ("This file exists!\nTo continue type 'Confirm'\n")
+					if Confirm == "Confirm":
+						shutil.move("tempfile.csv" , userinput)
+						print ("File Saved!")
+					else:
+						menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran)
+				else:
+					userinput = str.join('.', (userinput, 'csv'))#renames the file to what the user wants
 					shutil.move("tempfile.csv" , userinput)
 					print ("File Saved!")
-				else:
-					print("Save Canceled")
-					menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran)
 			else:
 				print ("Returned to menu. Run Model first")
 				menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran)
-		except FileNotFoundError:
-				shutil.move("tempfile.csv" , userinput)
-				print ("File Saved!")	
 		except Exception:
 				print  ("Error Returned to menu - Bad File Name?")
 				#if the use uses ?/\():; in a file name it will stop
@@ -160,5 +147,5 @@ Disease Effect:""",diseasefactor)
 			menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran)
 	else:
 		menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran)
-		
+			
 menu(gen,valuePASenior,valuePAAdult,valuePAJuv,valuePA,valueSA,valueBR,valueDT,valueAG,diseasefactor,Ran)
